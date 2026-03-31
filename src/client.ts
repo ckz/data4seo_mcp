@@ -57,7 +57,6 @@ export function createClient(login: string, password: string): DataForSeoClient 
     },
 
     async postAndWait(postEndpoint: string, getEndpointPrefix: string, data: any[], maxRetries = 30): Promise<any> {
-      // Ensure endpoints start with v3/ if they don't already
       const fixV3 = (e: string) => {
         let clean = e.startsWith("/") ? e.substring(1) : e;
         return clean.startsWith("v3/") ? clean : `v3/${clean}`;
@@ -66,7 +65,7 @@ export function createClient(login: string, password: string): DataForSeoClient 
       const v3PostEndpoint = fixV3(postEndpoint);
       const v3GetEndpointPrefix = fixV3(getEndpointPrefix);
 
-      console.log(`[DataForSeo] Initiating postAndWait for ${v3PostEndpoint}`);
+      console.log(`[DataForSeo] POST https://api.dataforseo.com/${v3PostEndpoint}`);
       const postResult = await client.post(v3PostEndpoint, data);
       const taskId = postResult.tasks?.[0]?.id;
 
@@ -74,36 +73,46 @@ export function createClient(login: string, password: string): DataForSeoClient 
         throw new Error(`Failed to get Task ID: ${JSON.stringify(postResult)}`);
       }
 
-      console.log(`[DataForSeo] Task created: ${taskId}. Starting polling...`);
+      console.log(`[DataForSeo] Task created: ${taskId}. Waiting 5s before first poll...`);
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
       // Polling loop
       for (let i = 0; i < maxRetries; i++) {
-        // Wait 3 seconds between polls (give it a bit more time)
-        await new Promise(resolve => setTimeout(resolve, 3000));
-
         const cleanPrefix = v3GetEndpointPrefix.endsWith("/") ? v3GetEndpointPrefix : `${v3GetEndpointPrefix}/`;
         const getUrl = `${cleanPrefix}${taskId}`;
         
-        const getResult = await client.get(getUrl);
-        const task = getResult.tasks?.[0];
+        console.log(`[DataForSeo] Poll ${i + 1}/${maxRetries}: GET https://api.dataforseo.com/${getUrl}`);
+        
+        try {
+          const getResult = await client.get(getUrl);
+          const task = getResult.tasks?.[0];
 
-        if (task) {
-          console.log(`[DataForSeo] Task ${taskId} status: ${task.status_code} (${task.status_message})`);
-          if (task.status_code === 20000) {
-            if (task.result !== null) {
-              console.log(`[DataForSeo] Task ${taskId} completed successfully.`);
-              return getResult;
+          if (task) {
+            console.log(`[DataForSeo] Task ${taskId} status: ${task.status_code} (${task.status_message})`);
+            if (task.status_code === 20000) {
+              if (task.result !== null) {
+                return getResult;
+              }
+              console.log(`[DataForSeo] Task ${taskId} result is null. Retrying...`);
             }
-            console.log(`[DataForSeo] Task ${taskId} status 20000 but result is still null. Retrying...`);
-          }
 
-          if (task.status_code !== 20100 && task.status_code !== 20000) {
-            throw new Error(`Task failed with status ${task.status_code}: ${task.status_message}`);
+            if (task.status_code !== 20100 && task.status_code !== 20000) {
+              throw new Error(`Task failed with status ${task.status_code}: ${task.status_message}`);
+            }
+          }
+        } catch (err: any) {
+          console.error(`[DataForSeo] Poll error: ${err.message}`);
+          // If it's a 40401 (Task Not Found), maybe it's just not indexed yet? 
+          // We'll keep retrying unless it's a fatal error.
+          if (!err.message.includes("40401")) {
+            throw err;
           }
         }
+        
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
 
-      throw new Error(`Task ${taskId} timed out after ${maxRetries * 3} seconds`);
+      throw new Error(`Task ${taskId} timed out after polling.`);
     }
 
   };
