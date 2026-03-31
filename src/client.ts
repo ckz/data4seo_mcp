@@ -10,7 +10,7 @@ export function createClient(login: string, password: string): DataForSeoClient 
   const auth = Buffer.from(`${login}:${password}`).toString("base64");
   
   const instance: AxiosInstance = axios.create({
-    baseURL: "https://api.dataforseo.com/v3/",
+    baseURL: "https://api.dataforseo.com/",
     headers: {
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/json",
@@ -21,10 +21,12 @@ export function createClient(login: string, password: string): DataForSeoClient 
     async post(endpoint: string, data: any[]): Promise<any> {
       try {
         const cleanEndpoint = endpoint.startsWith("/") ? endpoint.substring(1) : endpoint;
+        console.log(`[DataForSeo] POSTing to: ${instance.defaults.baseURL}${cleanEndpoint}`);
         const response = await instance.post(cleanEndpoint, data);
         return response.data;
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
+          console.error(`[DataForSeo] POST Error: ${error.response?.status} ${JSON.stringify(error.response?.data)}`);
           throw new Error(
             `DataForSeo API error: ${error.response?.status} ${JSON.stringify(
               error.response?.data
@@ -38,10 +40,12 @@ export function createClient(login: string, password: string): DataForSeoClient 
     async get(endpoint: string): Promise<any> {
       try {
         const cleanEndpoint = endpoint.startsWith("/") ? endpoint.substring(1) : endpoint;
+        console.log(`[DataForSeo] GETting from: ${instance.defaults.baseURL}${cleanEndpoint}`);
         const response = await instance.get(cleanEndpoint);
         return response.data;
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
+          console.error(`[DataForSeo] GET Error: ${error.response?.status} ${JSON.stringify(error.response?.data)}`);
           throw new Error(
             `DataForSeo API error: ${error.response?.status} ${JSON.stringify(
               error.response?.data
@@ -53,8 +57,17 @@ export function createClient(login: string, password: string): DataForSeoClient 
     },
 
     async postAndWait(postEndpoint: string, getEndpointPrefix: string, data: any[], maxRetries = 30): Promise<any> {
-      console.log(`[DataForSeo] POST ${postEndpoint} with data: ${JSON.stringify(data)}`);
-      const postResult = await client.post(postEndpoint, data);
+      // Ensure endpoints start with v3/ if they don't already
+      const fixV3 = (e: string) => {
+        let clean = e.startsWith("/") ? e.substring(1) : e;
+        return clean.startsWith("v3/") ? clean : `v3/${clean}`;
+      };
+
+      const v3PostEndpoint = fixV3(postEndpoint);
+      const v3GetEndpointPrefix = fixV3(getEndpointPrefix);
+
+      console.log(`[DataForSeo] Initiating postAndWait for ${v3PostEndpoint}`);
+      const postResult = await client.post(v3PostEndpoint, data);
       const taskId = postResult.tasks?.[0]?.id;
 
       if (!taskId) {
@@ -68,9 +81,8 @@ export function createClient(login: string, password: string): DataForSeoClient 
         // Wait 3 seconds between polls (give it a bit more time)
         await new Promise(resolve => setTimeout(resolve, 3000));
 
-        const cleanPrefix = getEndpointPrefix.endsWith("/") ? getEndpointPrefix : `${getEndpointPrefix}/`;
+        const cleanPrefix = v3GetEndpointPrefix.endsWith("/") ? v3GetEndpointPrefix : `${v3GetEndpointPrefix}/`;
         const getUrl = `${cleanPrefix}${taskId}`;
-        console.log(`[DataForSeo] Polling task ${taskId} (Attempt ${i + 1}/${maxRetries}): GET ${getUrl}`);
         
         const getResult = await client.get(getUrl);
         const task = getResult.tasks?.[0];
@@ -78,9 +90,8 @@ export function createClient(login: string, password: string): DataForSeoClient 
         if (task) {
           console.log(`[DataForSeo] Task ${taskId} status: ${task.status_code} (${task.status_message})`);
           if (task.status_code === 20000) {
-            // Check if result is actually there
             if (task.result !== null) {
-              console.log(`[DataForSeo] Task ${taskId} completed successfully with result.`);
+              console.log(`[DataForSeo] Task ${taskId} completed successfully.`);
               return getResult;
             }
             console.log(`[DataForSeo] Task ${taskId} status 20000 but result is still null. Retrying...`);
@@ -89,11 +100,7 @@ export function createClient(login: string, password: string): DataForSeoClient 
           if (task.status_code !== 20100 && task.status_code !== 20000) {
             throw new Error(`Task failed with status ${task.status_code}: ${task.status_message}`);
           }
-        } else {
-          console.log(`[DataForSeo] Task ${taskId} info not found in GET response.`);
         }
-        
-        // Still pending (20100)
       }
 
       throw new Error(`Task ${taskId} timed out after ${maxRetries * 3} seconds`);
