@@ -23,8 +23,8 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_code
       }];
       const result = await client.postAndWait(
-        "/app_data/google/app_info/task_post",
-        "/app_data/google/app_info/task_get/advanced",
+        "app_data/google/app_info/task_post",
+        "app_data/google/app_info/task_get/advanced",
         data
       );
       return {
@@ -53,8 +53,8 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_code
       }];
       const result = await client.postAndWait(
-        "/app_data/apple/app_info/task_post",
-        "/app_data/apple/app_info/task_get/advanced",
+        "app_data/apple/app_info/task_post",
+        "app_data/apple/app_info/task_get/advanced",
         data
       );
       return {
@@ -85,8 +85,8 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         depth
       }];
       const result = await client.postAndWait(
-        "/app_data/google/app_searches/task_post",
-        "/app_data/google/app_searches/task_get/advanced",
+        "app_data/google/app_searches/task_post",
+        "app_data/google/app_searches/task_get/advanced",
         data
       );
       return {
@@ -117,8 +117,8 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         depth
       }];
       const result = await client.postAndWait(
-        "/app_data/apple/app_searches/task_post",
-        "/app_data/apple/app_searches/task_get/advanced",
+        "app_data/apple/app_searches/task_post",
+        "app_data/apple/app_searches/task_get/advanced",
         data
       );
       return {
@@ -149,8 +149,8 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_code
       }];
       const result = await client.postAndWait(
-        "/app_data/google/app_list/task_post",
-        "/app_data/google/app_list/task_get/advanced",
+        "app_data/google/app_list/task_post",
+        "app_data/google/app_list/task_get/advanced",
         data
       );
       return {
@@ -181,8 +181,8 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_code
       }];
       const result = await client.postAndWait(
-        "/app_data/apple/app_list/task_post",
-        "/app_data/apple/app_list/task_get/advanced",
+        "app_data/apple/app_list/task_post",
+        "app_data/apple/app_list/task_get/advanced",
         data
       );
       return {
@@ -215,8 +215,8 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         sort_by
       }];
       const result = await client.postAndWait(
-        "/app_data/google/app_reviews/task_post",
-        "/app_data/google/app_reviews/task_get/advanced",
+        "app_data/google/app_reviews/task_post",
+        "app_data/google/app_reviews/task_get/advanced",
         data
       );
       return {
@@ -236,7 +236,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
       language_name: z.string().optional().describe("Language name"),
       language_code: z.string().optional().describe("Language code"),
       depth: z.number().optional().describe("Search depth (max 100)"),
-      sort_by: z.string().optional().describe("Sort reviews (e.g., newest, most_helpful)"),
+      sort_by: z.string().optional().describe("Sort reviews (e.g., newest, most_relevant)"),
     },
     async ({ app_id, location_name, location_code, language_name, language_code, depth, sort_by }) => {
       const data = [{
@@ -249,8 +249,8 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         sort_by
       }];
       const result = await client.postAndWait(
-        "/app_data/apple/app_reviews/task_post",
-        "/app_data/apple/app_reviews/task_get/advanced",
+        "app_data/apple/app_reviews/task_post",
+        "app_data/apple/app_reviews/task_get/advanced",
         data
       );
       return {
