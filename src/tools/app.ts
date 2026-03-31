@@ -20,8 +20,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         location_name,
         location_code,
         language_name,
-        language_code,
-        priority: 2
+        language_code
       }];
       const result = await client.postAndWait(
         "app_data/google/app_info/task_post",
@@ -51,8 +50,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         location_name,
         location_code,
         language_name,
-        language_code,
-        priority: 2
+        language_code
       }];
       const result = await client.postAndWait(
         "app_data/apple/app_info/task_post",
@@ -84,8 +82,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         location_code,
         language_name,
         language_code,
-        depth,
-        priority: 2
+        depth
       }];
       const result = await client.postAndWait(
         "app_data/google/app_searches/task_post",
@@ -117,8 +114,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         location_code,
         language_name,
         language_code,
-        depth,
-        priority: 2
+        depth
       }];
       const result = await client.postAndWait(
         "app_data/apple/app_searches/task_post",
@@ -150,8 +146,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         location_name,
         location_code,
         language_name,
-        language_code,
-        priority: 2
+        language_code
       }];
       const result = await client.postAndWait(
         "app_data/google/app_list/task_post",
@@ -183,8 +178,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         location_name,
         location_code,
         language_name,
-        language_code,
-        priority: 2
+        language_code
       }];
       const result = await client.postAndWait(
         "app_data/apple/app_list/task_post",
@@ -218,8 +212,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_name,
         language_code,
         depth,
-        sort_by,
-        priority: 2
+        sort_by
       }];
       const result = await client.postAndWait(
         "app_data/google/app_reviews/task_post",
@@ -253,71 +246,13 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_name,
         language_code,
         depth,
-        sort_by,
-        priority: 2
+        sort_by
       }];
       const result = await client.postAndWait(
         "app_data/apple/app_reviews/task_post",
         "app_data/apple/app_reviews/task_get/advanced",
         data
       );
-
-      return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
-      };
-    }
-  );
-
-  // Google Play App Searches (Live)
-  server.tool(
-    "google_play_app_searches_live",
-    "Get real-time search results from Google Play (Instant)",
-    {
-      keyword: z.string().describe("Keyword to search for"),
-      location_name: z.string().optional().describe("Location name"),
-      location_code: z.number().optional().describe("Location code"),
-      language_name: z.string().optional().describe("Language name"),
-      language_code: z.string().optional().describe("Language code"),
-      depth: z.number().optional().describe("Search depth (max 100)"),
-    },
-    async ({ keyword, location_name, location_code, language_name, language_code, depth }) => {
-      const data = [{
-        keyword,
-        location_name,
-        location_code,
-        language_name,
-        language_code,
-        depth
-      }];
-      const result = await client.post("app_data/google/search/live", data);
-      return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
-      };
-    }
-  );
-
-  // App Store App Searches (Live)
-  server.tool(
-    "app_store_app_searches_live",
-    "Get real-time search results from App Store (Instant)",
-    {
-      keyword: z.string().describe("Keyword to search for"),
-      location_name: z.string().optional().describe("Location name"),
-      location_code: z.number().optional().describe("Location code"),
-      language_name: z.string().optional().describe("Language name"),
-      language_code: z.string().optional().describe("Language code"),
-      depth: z.number().optional().describe("Search depth (max 100)"),
-    },
-    async ({ keyword, location_name, location_code, language_name, language_code, depth }) => {
-      const data = [{
-        keyword,
-        location_name,
-        location_code,
-        language_name,
-        language_code,
-        depth
-      }];
-      const result = await client.post("app_data/apple/search/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
