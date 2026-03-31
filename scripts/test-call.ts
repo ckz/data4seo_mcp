@@ -31,7 +31,7 @@ async function testToolCall() {
     if (!sessionId) throw new Error("No mcp-session-id");
 
     // 2. Call google_play_app_info
-    console.log("\n2. Calling 'google_play_app_info' for 'com.chime'...");
+    console.log("\n2. Calling 'google_play_app_info' for 'com.chime.android'...");
     const callResponse = await axios.post(
       URL,
       {
@@ -41,7 +41,7 @@ async function testToolCall() {
         params: {
           name: "google_play_app_info",
           arguments: {
-            app_id: "com.chime"
+            app_id: "com.chime.android"
           },
         },
       },
@@ -54,12 +54,14 @@ async function testToolCall() {
       }
     );
 
-    console.log("Response Body Sample:", callResponse.data.substring(0, 1000));
+    console.log("Response Body (Raw):", callResponse.data);
     
-    if (callResponse.data.includes("com.chime") && !callResponse.data.includes("\"result\": null")) {
-      console.log("\n✅ SUCCESS: Received actual data for 'com.chime'!");
+    if (callResponse.data.includes("com.chime.android") && !callResponse.data.includes("\"result\": null")) {
+      console.log("\n✅ SUCCESS: Received actual data for 'com.chime.android'!");
     } else if (callResponse.data.includes("20100")) {
       console.log("\n❌ FAILURE: Still received async task ID (20100). Polling failed or timed out.");
+    } else if (callResponse.data.includes("404")) {
+      console.log("\n❌ FAILURE: DataForSeo returned 404 (Not Found). Check App ID or Location.");
     } else {
       console.log("\n❓ UNKNOWN STATE: Check response body.");
     }
