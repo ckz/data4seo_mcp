@@ -89,24 +89,29 @@ export function createClient(login: string, password: string): DataForSeoClient 
 
           if (task) {
             console.log(`[DataForSeo] Task ${taskId} status: ${task.status_code} (${task.status_message})`);
+            
             if (task.status_code === 20000) {
               if (task.result !== null) {
+                console.log(`[DataForSeo] Task ${taskId} completed successfully.`);
                 return getResult;
               }
-              console.log(`[DataForSeo] Task ${taskId} result is null. Retrying...`);
-            }
-
-            if (task.status_code !== 20100 && task.status_code !== 20000) {
+              console.log(`[DataForSeo] Task ${taskId} status 20000 but result is still null. Retrying...`);
+            } else if (task.status_code === 20100 || task.status_code === 40401) {
+              // 20100 = Task Created (pending)
+              // 40401 = Task Not Found (usually means not indexed in the GET system yet)
+              console.log(`[DataForSeo] Task ${taskId} still pending or not indexed (${task.status_code})...`);
+            } else {
+              // True failure
               throw new Error(`Task failed with status ${task.status_code}: ${task.status_message}`);
             }
           }
         } catch (err: any) {
           console.error(`[DataForSeo] Poll error: ${err.message}`);
-          // If it's a 40401 (Task Not Found), maybe it's just not indexed yet? 
-          // We'll keep retrying unless it's a fatal error.
-          if (!err.message.includes("40401")) {
+          // If it's a network error or 40401 from axios, we keep retrying
+          if (!err.message.includes("40401") && !err.message.includes("404")) {
             throw err;
           }
+          console.log(`[DataForSeo] Encountered 404/40401 error, retrying task ${taskId}...`);
         }
         
         await new Promise(resolve => setTimeout(resolve, 5000));
