@@ -26,9 +26,9 @@ All requests to the HTTP server must include the `X-API-Key` header:
 
 **Timeouts by Tool Type:**
 - **App Info & Search:** Typically completes in 10-30 seconds.
-- **App Reviews:** Can take up to **3 minutes** (180s) due to the depth of data.
+- **App Store List & All Reviews:** Can take up to **5 minutes** (300s) due to slower backend processing on the Apple side or high data volume.
 
-**Tip:** If a review call takes a long time, it is likely still polling. Be patient.
+**Tip:** If a call takes a long time, it is likely still polling. Be patient.
 
 ### 2. App ID Formats
 - **Google Play:** Always use the package name (e.g., `com.chime.android`, `com.whatsapp`).
@@ -68,4 +68,4 @@ To see top charts:
 
 - **Never** use numeric IDs for Google Play tools (results in 404).
 - **Never** use package names for App Store tools.
-- **Avoid** calling many review tools in parallel if you need the data sequentially, as each call can take up to 3 minutes.
+- **Avoid** calling many review or list tools in parallel if you need the data sequentially, as each call can take up to 5 minutes.
