@@ -16,10 +16,14 @@ This skill provides procedural knowledge for using the DataForSeo MCP server to 
 ### 1. Polling Behavior (Critical)
 The DataForSeo API is asynchronous. When a tool is called, the MCP server performs the following:
 1.  **POST**s a task to DataForSeo.
-2.  **Polls** the retrieval endpoint every 5 seconds.
-3.  **Waits** until the task is complete (usually 10-30 seconds).
+2.  **Polls** the retrieval endpoint every 3-5 seconds.
+3.  **Waits** until completion or timeout.
 
-**Tip:** Be patient when calling tools; they will "hang" while waiting for the actual data.
+**Timeouts by Tool Type:**
+- **App Info & Search:** Typically completes in 10-30 seconds.
+- **App Reviews:** Can take up to **3 minutes** (180s) due to the depth of data.
+
+**Tip:** If a review call takes a long time, it is likely still polling. Be patient.
 
 ### 2. App ID Formats
 - **Google Play:** Always use the package name (e.g., `com.chime.android`, `com.whatsapp`).
@@ -37,8 +41,8 @@ To find which apps are dominating a specific niche:
 To audit a specific competitor:
 1.  **Metadata:** Call `google_play_app_info` or `app_store_app_info` to get titles, descriptions, and developer info.
 2.  **Reviews:** Use `google_play_app_reviews` or `app_store_app_reviews`.
-    -   Use `sort_by: "newest"` for current sentiment.
-    -   Use `sort_by: "most_relevant"` (App Store) or `"helpful"` (Google Play) for high-impact feedback.
+    -   **Sort (App Store):** Use `"most_relevant"` (default) or `"newest"`.
+    -   **Sort (Google Play):** Use `"helpful"` or `"newest"`.
 
 ### Workflow 3: Category Discovery
 To see top charts:
@@ -59,4 +63,4 @@ To see top charts:
 
 - **Never** use numeric IDs for Google Play tools (results in 404).
 - **Never** use package names for App Store tools.
-- **Avoid** calling many tools in parallel if you need the data sequentially, as each call takes ~20s.
+- **Avoid** calling many review tools in parallel if you need the data sequentially, as each call can take up to 3 minutes.
