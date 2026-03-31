@@ -183,8 +183,11 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
       const result = await client.postAndWait(
         "app_data/apple/app_list/task_post",
         "app_data/apple/app_list/task_get/advanced",
-        data
+        data,
+        60, // 60 retries
+        5000 // 5s delay = 300s total
       );
+
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -219,8 +222,9 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         "app_data/google/app_reviews/task_get/advanced",
         data,
         60, // 60 retries
-        3000 // 3s delay = 180s total
+        5000 // 5s delay = 300s total
       );
+
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -255,8 +259,9 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         "app_data/apple/app_reviews/task_get/advanced",
         data,
         60, // 60 retries
-        3000 // 3s delay = 180s total
+        5000 // 5s delay = 300s total
       );
+
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
