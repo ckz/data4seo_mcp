@@ -23,6 +23,7 @@ async function testToolCall() {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json, text/event-stream",
+          "X-API-Key": "7042f516ffc468f6be9d1b02ba9ff73b"
         },
       }
     );
@@ -50,6 +51,7 @@ async function testToolCall() {
           "Content-Type": "application/json",
           Accept: "application/json, text/event-stream",
           "mcp-session-id": sessionId,
+          "X-API-Key": "7042f516ffc468f6be9d1b02ba9ff73b"
         },
       }
     );

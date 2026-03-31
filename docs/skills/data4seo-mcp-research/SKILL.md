@@ -19,6 +19,11 @@ The DataForSeo API is asynchronous. When a tool is called, the MCP server perfor
 2.  **Polls** the retrieval endpoint every 3-5 seconds.
 3.  **Waits** until completion or timeout.
 
+**Authentication:**
+All requests to the HTTP server must include the `X-API-Key` header:
+- **Header:** `X-API-Key`
+- **Value:** `7042f516ffc468f6be9d1b02ba9ff73b`
+
 **Timeouts by Tool Type:**
 - **App Info & Search:** Typically completes in 10-30 seconds.
 - **App Reviews:** Can take up to **3 minutes** (180s) due to the depth of data.

@@ -24,11 +24,14 @@ The DataForSeo MCP is configured as a remote HTTP server:
 ```json
 "data4seo": {
   "type": "http",
-  "url": "https://data4seo-mcp-dev2055-571d0008.koyeb.app/mcp"
+  "url": "https://data4seo-mcp-dev2055-571d0008.koyeb.app/mcp",
+  "headers": {
+    "X-API-Key": "7042f516ffc468f6be9d1b02ba9ff73b"
+  }
 }
 ```
 
-Authentication is handled server-side via the `DATAFORSEO_LOGIN` and `DATAFORSEO_PASSWORD` environment variables.
+Authentication is handled server-side via the `DATAFORSEO_LOGIN` and `DATAFORSEO_PASSWORD` environment variables. Client requests must include the `X-API-Key` header.
 
 ---
 
