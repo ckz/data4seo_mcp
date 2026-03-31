@@ -90,18 +90,19 @@ export function createClient(login: string, password: string): DataForSeoClient 
           if (task) {
             console.log(`[DataForSeo] Task ${taskId} status: ${task.status_code} (${task.status_message})`);
             
-            if (task.status_code === 20000) {
+            if (task.status_code == 20000) {
               if (task.result !== null) {
                 console.log(`[DataForSeo] Task ${taskId} completed successfully.`);
                 return getResult;
               }
               console.log(`[DataForSeo] Task ${taskId} status 20000 but result is still null. Retrying...`);
-            } else if (task.status_code === 20100 || task.status_code === 40401) {
+            } else if (task.status_code == 20100 || task.status_code == 40401) {
               // 20100 = Task Created (pending)
               // 40401 = Task Not Found (usually means not indexed in the GET system yet)
               console.log(`[DataForSeo] Task ${taskId} still pending or not indexed (${task.status_code})...`);
             } else {
               // True failure
+              console.log(`[DataForSeo] Task ${taskId} failed with status: ${task.status_code}`);
               throw new Error(`Task failed with status ${task.status_code}: ${task.status_message}`);
             }
           }
