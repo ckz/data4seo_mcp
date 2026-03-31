@@ -22,7 +22,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_name,
         language_code
       }];
-      const result = await client.post("/app_data/google/app_info/task_post", data);
+      const result = await client.post("/app_data/google/app_info/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -48,7 +48,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_name,
         language_code
       }];
-      const result = await client.post("/app_data/apple/app_info/task_post", data);
+      const result = await client.post("/app_data/apple/app_info/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -76,7 +76,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_code,
         depth
       }];
-      const result = await client.post("/app_data/google/app_searches/task_post", data);
+      const result = await client.post("/app_data/google/app_searches/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -104,7 +104,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_code,
         depth
       }];
-      const result = await client.post("/app_data/apple/app_searches/task_post", data);
+      const result = await client.post("/app_data/apple/app_searches/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -132,7 +132,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_name,
         language_code
       }];
-      const result = await client.post("/app_data/google/app_list/task_post", data);
+      const result = await client.post("/app_data/google/app_list/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -160,7 +160,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_name,
         language_code
       }];
-      const result = await client.post("/app_data/apple/app_list/task_post", data);
+      const result = await client.post("/app_data/apple/app_list/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -190,7 +190,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         depth,
         sort_by
       }];
-      const result = await client.post("/app_data/google/app_reviews/task_post", data);
+      const result = await client.post("/app_data/google/app_reviews/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -220,7 +220,7 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         depth,
         sort_by
       }];
-      const result = await client.post("/app_data/apple/app_reviews/task_post", data);
+      const result = await client.post("/app_data/apple/app_reviews/live", data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
