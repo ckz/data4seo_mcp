@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from "axios";
 export interface DataForSeoClient {
   post(endpoint: string, data: any[]): Promise<any>;
   get(endpoint: string): Promise<any>;
-  postAndWait(postEndpoint: string, getEndpointPrefix: string, data: any[], maxRetries?: number): Promise<any>;
+  postAndWait(postEndpoint: string, getEndpointPrefix: string, data: any[], maxRetries?: number, delayMs?: number): Promise<any>;
 }
 
 export function createClient(login: string, password: string): DataForSeoClient {
@@ -56,7 +56,7 @@ export function createClient(login: string, password: string): DataForSeoClient 
       }
     },
 
-    async postAndWait(postEndpoint: string, getEndpointPrefix: string, data: any[], maxRetries = 30): Promise<any> {
+    async postAndWait(postEndpoint: string, getEndpointPrefix: string, data: any[], maxRetries = 30, delayMs = 5000): Promise<any> {
       const fixV3 = (e: string) => {
         let clean = e.startsWith("/") ? e.substring(1) : e;
         return clean.startsWith("v3/") ? clean : `v3/${clean}`;
@@ -73,8 +73,8 @@ export function createClient(login: string, password: string): DataForSeoClient 
         throw new Error(`Failed to get Task ID: ${JSON.stringify(postResult)}`);
       }
 
-      console.log(`[DataForSeo] Task created: ${taskId}. Waiting 5s before first poll...`);
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      console.log(`[DataForSeo] Task created: ${taskId}. Waiting ${delayMs}ms before first poll...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
 
       // Polling loop
       for (let i = 0; i < maxRetries; i++) {
@@ -97,25 +97,21 @@ export function createClient(login: string, password: string): DataForSeoClient 
               }
               console.log(`[DataForSeo] Task ${taskId} status 20000 but result is still null. Retrying...`);
             } else if (task.status_code == 20100 || task.status_code == 40401) {
-              // 20100 = Task Created (pending)
-              // 40401 = Task Not Found (usually means not indexed in the GET system yet)
               console.log(`[DataForSeo] Task ${taskId} still pending or not indexed (${task.status_code})...`);
             } else {
-              // True failure
               console.log(`[DataForSeo] Task ${taskId} failed with status: ${task.status_code}`);
               throw new Error(`Task failed with status ${task.status_code}: ${task.status_message}`);
             }
           }
         } catch (err: any) {
           console.error(`[DataForSeo] Poll error: ${err.message}`);
-          // If it's a network error or 40401 from axios, we keep retrying
           if (!err.message.includes("40401") && !err.message.includes("404")) {
             throw err;
           }
           console.log(`[DataForSeo] Encountered 404/40401 error, retrying task ${taskId}...`);
         }
         
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, delayMs));
       }
 
       throw new Error(`Task ${taskId} timed out after polling.`);

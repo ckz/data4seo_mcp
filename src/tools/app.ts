@@ -217,7 +217,9 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
       const result = await client.postAndWait(
         "app_data/google/app_reviews/task_post",
         "app_data/google/app_reviews/task_get/advanced",
-        data
+        data,
+        60, // 60 retries
+        3000 // 3s delay = 180s total
       );
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -246,12 +248,14 @@ export function registerTools(server: McpServer, client: DataForSeoClient) {
         language_name,
         language_code,
         depth,
-        sort_by
+        sort_by: sort_by || "most_relevant"
       }];
       const result = await client.postAndWait(
         "app_data/apple/app_reviews/task_post",
         "app_data/apple/app_reviews/task_get/advanced",
-        data
+        data,
+        60, // 60 retries
+        3000 // 3s delay = 180s total
       );
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
