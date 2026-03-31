@@ -96,7 +96,7 @@ export function createClient(login: string, password: string): DataForSeoClient 
                 return getResult;
               }
               console.log(`[DataForSeo] Task ${taskId} status 20000 but result is still null. Retrying...`);
-            } else if (task.status_code == 20100 || task.status_code == 40401) {
+            } else if (task.status_code == 20100 || task.status_code == 40401 || task.status_code == 40602) {
               console.log(`[DataForSeo] Task ${taskId} still pending or not indexed (${task.status_code})...`);
             } else {
               console.log(`[DataForSeo] Task ${taskId} failed with status: ${task.status_code}`);
