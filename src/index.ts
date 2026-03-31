@@ -68,6 +68,27 @@ async function startHttpServer() {
   const client = createClient(login, password);
   const app = express();
 
+  // Auth middleware
+  const apiKey = process.env.API_KEY;
+  if (apiKey) {
+    console.log("API_KEY authentication enabled.");
+  } else {
+    console.warn("WARNING: No API_KEY set. Server is open to the public.");
+  }
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (!apiKey) {
+      return next();
+    }
+
+    const providedKey = req.headers["x-api-key"];
+    if (providedKey === apiKey) {
+      return next();
+    }
+
+    res.status(401).json({ error: "Unauthorized", message: "Invalid or missing API Key" });
+  });
+
   // Error handler
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error("Express error:", err);
